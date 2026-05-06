@@ -1,112 +1,130 @@
-<div align="center">
-  
-  <br>
-  <h1>⚡ DarkLine Messenger</h1>
-  <p>
-    <b>A modern, secure, and blazing-fast local network messenger built with Python.</b>
-  </p>
-  
-  [![Python Version](https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/)
-  [![CustomTkinter](https://img.shields.io/badge/UI-CustomTkinter-darkgreen.svg?style=for-the-badge)](https://github.com/TomSchimansky/CustomTkinter)
-  [![Security](https://img.shields.io/badge/Encryption-AES--128-red.svg?style=for-the-badge)](https://cryptography.io/en/latest/fernet/)
-  [![Developer](https://img.shields.io/badge/Developer-MRThugh-purple.svg?style=for-the-badge&logo=github)](https://github.com/MRThugh)
+# ⚡ DarkLine Messenger
 
-  *Crafted with passion by [MRThugh](https://github.com/MRThugh).*
-  
-</div>
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)
+![UI](https://img.shields.io/badge/UI-CustomTkinter-89b4fa)
+![Encryption](https://img.shields.io/badge/Security-RSA%20%2B%20Fernet-a6e3a1)
+
+**DarkLine Messenger** is a secure, local-network, client-server desktop chat application built with Python. It features robust end-to-end encryption, real-time presence tracking, secure file sharing, and an elegant, modern dark-themed UI.
+
+Created by **MR.Thugh / Ali Kamrani** ([@MRThugh](https://github.com/MRThugh)).
 
 ---
 
-## 📖 About The Project
-
-**DarkLine Messenger** is a fully-featured, decentralized LAN (Local Area Network) chat application. Designed with a sleek, modern, dark-themed UI using `customtkinter`, it allows users on the same network to host servers, connect as clients, create private chat rooms, share media, and communicate securely using real-time AES encryption.
-
-Whether you're looking for a private communication tool for your office/home network or an excellent example of Python socket programming and GUI design, DarkLine is built to impress.
-
-## ✨ God-Tier Features
-
-*   🛡️ **End-to-End Encryption:** All messages and images are encrypted locally before transmission using AES (Advanced Encryption Standard via `cryptography.fernet`).
-*   🎨 **Modern Dark UI:** Beautiful, responsive, and intuitive graphical interface powered by `CustomTkinter` with a custom "blue" color theme.
-*   🏠 **Dynamic Chat Rooms:** Create custom chat channels on the fly. You can even lock rooms with **passwords** for private group conversations!
-*   🖼️ **Media Sharing & Profiles:** 
-    *   Set custom Profile Pictures (resized automatically and transmitted via Base64).
-    *   Send, receive, and download image messages directly within the chat.
-*   🖥️ **Built-in Server Hosting:** No third-party servers required. Host a server directly from the client with one click.
-*   📡 **Smart Networking:** Auto-detects your local IP address and displays real-time connection status and active user counts.
-*   🕒 **Live Dashboard:** Integrated real-time clock, date display, and system event logging (connection drops, new rooms, etc.).
+## 📖 Table of Contents
+- [About the Project](#-about-the-project)
+- [Key Features](#-key-features)
+- [Architecture & Security](#-architecture--security)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Discussion & Philosophy](#-discussion--philosophy)
+- [License](#-license)
+- [Author](#-author)
 
 ---
 
-## 📸 Screenshots
+## 💡 About the Project
 
-| Login & Server Setup | Chat Room & Image Sharing | Private Rooms |
-| :---: | :---: | :---: |
-| <img src="https://via.placeholder.com/300x200.png?text=Login+Screen" width="300"/> | <img src="https://via.placeholder.com/300x200.png?text=Chat+Interface" width="300"/> | <img src="https://via.placeholder.com/300x200.png?text=Password+Protected" width="300"/> |
+DarkLine Messenger was designed to provide a secure and reliable way to communicate over local networks without relying on third-party servers. Whether you need a private chat system for your office, home network, or a LAN party, DarkLine ensures your data remains yours. 
+
+The software includes a built-in server host, meaning any client can easily act as the central node for the network. It tracks users in real-time, stores encrypted chat history, and allows for large file transfers—all wrapped in a sleek `CustomTkinter` graphical interface.
 
 ---
 
-## 🚀 Getting Started
+## ✨ Key Features
+
+- **🔒 Startup Security Gateway**: Users must log in or register before accessing any chat controls or rooms. Passwords are securely hashed using `bcrypt`.
+- **🔑 Hybrid Encryption**: Uses RSA for secure key exchange, transitioning to high-speed Fernet (AES) symmetric encryption for real-time messaging.
+- **👥 Live Online Users List**: Real-time tracking of active users in your current chat room.
+- **📁 Secure Chunked File Transfer**: Share files up to 50MB. Files are broken into 64KB chunks, Base64 encoded, encrypted, and reassembled on the server before being saved locally.
+- **🖼️ Image Sharing & Profiles**: Set custom profile pictures and share images directly in the chat with inline rendering.
+- **🏠 Room Management**: Create open or password-protected chat rooms dynamically.
+- **🗄️ Database Integration**: Persistent storage of user credentials and chat history using `SQLite3`.
+
+---
+
+## 🏗️ Architecture & Security
+
+DarkLine operates on a standard **Client-Server architecture** using standard TCP sockets. 
+
+1. **Handshake & Key Exchange**: When a client connects, the server sends its public RSA key. The client generates a random Fernet key, encrypts it with the server's public RSA key, and sends it back. All subsequent communication is encrypted with this Fernet key.
+2. **Authentication**: Credentials are cross-checked against a local SQLite database (`darkline.db`). Passwords are NEVER stored in plaintext (secured via `bcrypt` salting/hashing).
+3. **Event-Driven Protocol**: All actions (text, file chunks, room syncs, presence updates) are packaged into structured JSON objects, encrypted, and broadcasted to the appropriate sockets.
+
+---
+
+## ⚙️ Installation
 
 ### Prerequisites
+Make sure you have **Python 3.8+** installed on your system.
 
-You need Python 3.8 or higher installed on your machine. You will also need to install the required dependencies.
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/MRThugh/DarkLine-Messenger.git
-   cd DarkLine-Messenger
-   ```
-
-2. **Install required packages:**
-   ```bash
-   pip install customtkinter Pillow cryptography
-   ```
-
-3. **Run the application:**
-   ```bash
-   python main.py
-   ```
+### 1. Clone the Repository
+```bash
+git clone https://github.com/MRThugh/DarkLine-Messenger.git
+cd DarkLine-Messenger
+```
+### 2. Install Dependencies
+Install the required Python packages using `pip`:
+bash
+pip install customtkinter cryptography Pillow bcrypt
 
 ---
 
-## 🕹️ How to Use
+## 🚀 Usage
 
-### Hosting a Server (Host)
+You can run the application directly via Python.
+
+```bash
+python main.py
+```
+
+### Hosting a Server
 1. Launch the app.
-2. Enter your desired **Username** and click `📷 Set Profile Picture` (optional).
-3. The app will show your **Local IP** on the sidebar.
-4. Enter a **Port** (default `5555`) and click **🖥️ Host Server**.
-5. You are now hosting the chat! Tell your friends your Local IP and Port.
+2. Under **Connection**, specify the port (default `5555`).
+3. Click **🖥️ Host Server**.
+4. The server will initialize, generate encryption keys, and set up the SQLite database. Register an account and log in.
 
-### Connecting to a Server (Client)
-1. Launch the app on another computer on the same network.
-2. Enter your **Username** and set a **Profile Picture**.
-3. Under Connection, enter the **Host IP** (the IP of the person hosting) and the **Port**.
-4. Click **🔗 Connect**.
-5. Start chatting in the "General" room, or create your own locked rooms!
+### Connecting as a Client
+1. Launch the app on another machine (or the same machine for testing).
+2. Enter the **Host IP** (the IP address of the machine running the server) and **Port**.
+3. Click **🔗 Connect**.
+4. Register or log in through the Security Gateway to start chatting!
 
----
-
-## 🧠 Under the Hood (Architecture)
-
-*   **Networking:** Pure Python `socket` library utilizing TCP streams (`SOCK_STREAM`).
-*   **Concurrency:** Utilizes Python `threading` to keep the UI responsive while simultaneously listening for incoming network packets.
-*   **Data Serialization:** Payloads (text, timestamps, Base64 images) are packaged into `JSON` formats before transmission.
-*   **Security:** `Fernet` symmetric encryption ensures that any packet intercepted on the network is completely unreadable without the secret key.
+*(Note: Shared files will be saved in the `./received_files/<room_name>/` directory on the server machine).*
 
 ---
 
-## 🛠️ Future Roadmap
+## 💬 Discussion & Philosophy
 
-- [ ] Add Emojis / Sticker support.
-- [ ] Implement file sharing (PDFs, ZIPs).
-- [ ] Add a global configuration file (`config.json`) for custom encryption keys.
-- [ ] Notification sounds for new messages.
+DarkLine Messenger was built with the belief that **privacy should be the default**. In an era where cloud servers process every keystroke, DarkLine brings the power back to local networks. 
+
+By remaining **Open Source**, the community can audit the encryption flow, verify the security measures, and contribute to the protocol. The choice of Python allows for rapid development and easy cross-platform compatibility (Windows, macOS, Linux), while `CustomTkinter` proves that desktop applications don't need web frameworks like Electron to look modern and beautiful.
+
+Contributions, forks, and pull requests are highly encouraged!
 
 ---
 
-## 🤝 Contributing
+## 📜 License
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/MRThugh/DarkLine-Messenger/issues).
+This project is open-source and available under the **MIT License**. 
+You are free to use, modify, and distribute this software as per the terms of the license.
+
+text
+MIT License
+
+Copyright (c) 2026 Ali Kamrani (MR.Thugh)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+...
+*(See the [LICENSE](LICENSE) file for the full text).*
+
+---
+
+## 👨‍💻 Author
+
+**Ali Kamrani / MR.Thugh**
+- GitHub: [@MRThugh](https://github.com/MRThugh)
+- Project Link: [https://github.com/MRThugh/DarkLine-Messenger](https://github.com/MRThugh/DarkLine-Messenger)
+
+---
+*If you like this project, please consider giving it a ⭐ on GitHub!*
